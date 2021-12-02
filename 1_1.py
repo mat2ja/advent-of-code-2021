@@ -2,7 +2,7 @@
 Count the number of times a depth measurement increases from the previous measurement. (There is no measurement before the first measurement.)
 '''
 
-f = open(r'1_input.txt', 'r')
+f = open(r'input_1.txt', 'r')
 rows = [int(row[:-1]) for row in f]
 
 

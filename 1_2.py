@@ -4,7 +4,7 @@ Start by comparing the first and second three-measurement windows. The measureme
 Your goal now is to count the number of times the sum of measurements in this sliding window increases from the previous sum. So, compare A with B, then compare B with C, then C with D, and so on. Stop when there aren't enough measurements left to create a new three-measurement sum.
 '''
 
-f = open(r'1_input.txt', 'r')
+f = open(r'input_1.txt', 'r')
 rows = [int(row[:-1]) for row in f]
 
 
