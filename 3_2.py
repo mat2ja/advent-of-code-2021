@@ -1,50 +1,55 @@
-from statistics import mode
-
 f = open(r'input_3.txt', 'r')
 rows = [row[:-1] for row in f]
 
 
-# rows = [
-#     '00100',
-#     '11110',
-#     '10110',
-#     '10111',
-#     '10101',
-#     '01111',
-#     '00111',
-#     '11100',
-#     '10000',
-#     '11001',
-#     '00010',
-#     '01010',
-# ]
-
-
-def most_common(List):
-    return(mode(List))
-
-
-def gen_rows_map(length):
-    return [[] for i in range(length)]
-
-
-def fill_rows_map(rows_map, rows):
+def gen_rows_map(rows):
+    rows_map = [[] for i in range(len(rows[0]))]
     for row in rows:
         for i in range(len(row)):
             rows_map[i] += row[i]
+    return rows_map
 
 
-def find_rates(rows):
-    rows_map = gen_rows_map(len(rows[0]))
-    fill_rows_map(rows_map, rows)
+def calc_oxygen_rate(rows, rows_map_og):
+    rows_map = rows_map_og[:]
+    filt_rows = rows[:]
 
-    gamma_bin = ''.join([most_common(row) for row in rows_map])
-    epsilon_bin = ''.join([str((int(n) + 1) % 2) for n in gamma_bin])
+    for i in range(len(rows_map)):
+        rows_map = gen_rows_map(filt_rows)
 
-    gamma = int(gamma_bin, 2)
-    epsilon = int(epsilon_bin, 2)
+        if (len(filt_rows) == 1):
+            break
 
-    return gamma * epsilon
+        mc = '1' if rows_map[i].count('1') >= rows_map[i].count('0') else '0'
+        filt_rows = [row for row in filt_rows if row[i] == mc]
+
+    result = ''.join(filt_rows)
+    return int(result, 2)
 
 
-print(find_rates(rows))
+def calc_co2_rate(rows, rows_map_og):
+    rows_map = rows_map_og[:]
+    filt_rows = rows[:]
+
+    for i in range(len(rows_map)):
+        rows_map = gen_rows_map(filt_rows)
+        if (len(filt_rows) == 1):
+            break
+
+        lc = '0' if rows_map[i].count('1') >= rows_map[i].count('0') else '1'
+        filt_rows = [row for row in filt_rows if row[i] == lc]
+
+    result = ''.join(filt_rows)
+    return int(result, 2)
+
+
+def calc_life_support(rows):
+    rows_map = gen_rows_map(rows)
+
+    oxygen = calc_oxygen_rate(rows, rows_map)
+    co2 = calc_co2_rate(rows, rows_map)
+
+    return oxygen * co2
+
+
+print(calc_life_support(rows))
