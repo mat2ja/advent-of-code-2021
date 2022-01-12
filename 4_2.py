@@ -1,7 +1,8 @@
+from os import closerange
 import re
 
-# f = open(r'input_4.txt', 'r')
 f = open(r'input_4.txt', 'r')
+# f = open(r'input_4_test.txt', 'r')
 rows = [row[:-1].split('\n\n') for row in f]
 
 
@@ -51,7 +52,7 @@ def store_cols(boards):
 
 def find_draw(draw, board_rows, board_cols):
     # board, last n
-    bingo_tup = (None, None)
+    bingo_tup = (None, None, None)
 
     for key in board_rows:
         for i in range(len(board_rows[key])):
@@ -59,7 +60,7 @@ def find_draw(draw, board_rows, board_cols):
                 n for n in board_rows[key][i] if n != draw]
 
             if not len(board_rows[key][i]):
-                bingo_tup = (board_rows[key], draw)
+                bingo_tup = (key, board_rows[key], draw)
 
         for key in board_cols:
             for i in range(len(board_cols[key])):
@@ -67,9 +68,25 @@ def find_draw(draw, board_rows, board_cols):
                     n for n in board_cols[key][i] if n != draw]
 
                 if not len(board_cols[key][i]):
-                    bingo_tup = (board_cols[key], draw)
+                    bingo_tup = (key, board_cols[key], draw)
 
     return bingo_tup
+
+
+def has_non_empty(board):
+    for row in board:
+        if len(row) == 0:
+            return False
+    return True
+
+
+def count_non_empty(board_map):
+    count = 0
+    for board in board_map.values():
+        if has_non_empty(board):
+            count += 1
+    # print('COUNT', count)
+    return count
 
 
 def get_bingo_score(boards, draws):
@@ -78,13 +95,21 @@ def get_bingo_score(boards, draws):
 
     score = None
     for draw in draws:
-        (board, final_draw) = find_draw(draw, board_rows, board_cols)
+        (key, board, final_draw) = find_draw(draw, board_rows, board_cols)
 
+        # if bingo found
         if board:
-            flat_list = [item for sublist in board for item in sublist]
-            suma = sum(flat_list)
-            score = suma * final_draw
-            break
+
+            if count_non_empty(board_rows) > 1 or count_non_empty(board_cols) > 1:
+                if count_non_empty(board_rows):
+                    board_rows.pop(key)
+                if count_non_empty(board_cols):
+                    board_cols.pop(key)
+            else:
+                flat_list = [item for sublist in board for item in sublist]
+                suma = sum(flat_list)
+                score = suma * final_draw
+                break
 
     return score
 
@@ -94,4 +119,4 @@ def calc_bingo(rows):
     return get_bingo_score(boards, draws)
 
 
-print(calc_bingo(rows))  # 33462
+print('SCORE', calc_bingo(rows))  # 33462
